@@ -1,0 +1,34 @@
+menu "ESP Webcfg"
+
+    config ESP_WEBCFG_SSID
+        string "ESP Webcfg WiFi SSID"
+        default "ESP WEBCFG"
+        help
+            SSID (network name) for the example to connect to.
+    config ESP_WEBCFG_PASSWORD
+        string "ESP Webcfg WiFi Password"
+        default "mypassword"
+        help
+            WiFi password (WPA or WPA2) for the example to use.
+    config ESP_WEBCFG_WIFI_CHANNEL
+        int "ESP Webcfg WiFi Channel"
+        range 1 13
+        default 1
+        help
+            WiFi channel (network channel) for the example to use.
+    config ESP_WEBCFG_MAX_STA_CONN
+        int "ESP Webcfg Maximal STA connections"
+        default 1
+        help
+            Max number of the STA connects to AP.
+
+    config ESP_WEBCFG_IP
+        string  "ESP Webcfg Httpd IP"
+        default "192.168.4.1"
+    config ESP_WEBCFG_GW
+        string "ESP Webcfg Httpd ADDR"
+        default "192.168.4.1"
+    config ESP_WEBCFG_NETMASK
+        string "ESP Webcfg Httpd NETMASK"
+        default "255.255.255.0"
+endmenu

@@ -1,0 +1,195 @@
+<!--
+ * @Author: Jc-Lx 1031510595@qq.com
+ * @Date: 2022-07-06 19:40:26
+ * @LastEditors: Jc-Lx 1031510595@qq.com
+ * @LastEditTime: 2023-04-26 14:56:11
+ * @FilePath: \esp32_factory\components\fac\web\index.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>ESP Webcfg</title>
+    <style type="text/css">
+        .inputStyle {
+            background: #3e527d;
+            border-color: #616d8b;
+            width: 272px;
+            height: 32px;
+            display: block;
+            float: left;
+        }
+
+        .labelStyle {
+            width: 120px;
+            color: white;
+            height: 30px;
+            line-height: 30px;
+            display: block;
+            float: left;
+        }
+
+        .inputGroup {
+            width: 600px;
+            height: 50px;
+            margin: 0 auto;
+            padding-top: 16px;
+        }
+
+        .btn {
+            width: 72px;
+            height: 32px;
+            border: none;
+            margin-left: 16px;
+            background: linear-gradient(180deg, #2F79E7 0%, #1B62CC 100%);
+            border-radius: 2px 2px 2px 2px;
+            font-size: 12px;
+            line-height: 32px;
+            text-align: center;
+            opacity: 1;
+            color: white;
+        }
+
+    </style>
+    <script>
+        function startUpload() {
+            var otafile = document.getElementById("otafile").files;
+
+            if (otafile.length == 0) {
+                alert("No file selected!");
+            } else {
+                document.getElementById("otafile").disabled = true;
+                document.getElementById("upload").disabled = true;
+
+                var file = otafile[0];
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200) {
+                            document.open();
+                            document.write(xhr.responseText);
+                            document.close();
+                        } else if (xhr.status == 0) {
+                            alert("Server closed the connection abruptly!");
+                            location.reload()
+                        } else {
+                            alert(xhr.status + " Error!\n" + xhr.responseText);
+                            location.reload()
+                        }
+                    }
+                };
+
+                xhr.upload.onprogress = function (e) {
+                    var progress = document.getElementById("progress");
+                    progress.textContent = "Progress: " + (e.loaded / e.total * 100).toFixed(0) + "%";
+                };
+                xhr.open("POST", "/update", true);
+                xhr.send(file);
+            }
+        }
+
+        function jsoncfg() {
+            var ssid = document.getElementById("ssid").value;
+            var password = document.getElementById("password").value;
+            var parameter = document.getElementById("cfg_Json").value;
+
+            var jsonObj = {
+                parameter: {}
+            };
+            jsonObj.ssid = ssid;
+            jsonObj.password = password;
+            jsonObj.parameter.p1 = parameter;
+
+            var xhr = new XMLHttpRequest();
+            //使用HTTP POST请求与服务器交互数据
+            xhr.open("POST", "/parameter", true);
+            //设置发送数据的请求格式
+            xhr.setRequestHeader('content-type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    //根据服务器的响应内容格式处理响应结果
+                    if (xhr.getResponseHeader('content-type') === 'application/json') {
+                        var result = JSON.parse(xhr.responseText);
+                        //根据返回结果判断验证码是否正确
+                        if (result.code === -1) {
+                            alert('验证码错误');
+                        }
+                    } else {
+                        console.log(xhr.responseText);
+                    }
+                }
+            }
+            //将用户输入值序列化成字符串
+            // xhr.send(JSON.stringify(parameter));
+            xhr.send(JSON.stringify(jsonObj));
+        }
+
+
+        window.onload = function () {
+            let inputChange = document.getElementById("otafile")//获取inputDom
+            inputChange.oninput = function () {//监听输入事件
+                document.getElementById("otafilePath").innerHTML = getFileName(this.value);
+            }
+        };
+
+        function getFileName(o) {
+            var pos = o.lastIndexOf("\\");
+            return o.substring(pos + 1);
+        }
+    </script>
+</head>
+<body style="background: #1d354d;padding-top: 270px ">
+
+
+<div style="width: 810px;height: 540px; margin: 0 auto; background: #6e7d8d; border-width: 2px; border-style: solid; border-color: #4b62a3;">
+    <h1 style="margin-top: 33px; color: white; display: block;width: 100%;height: auto;text-align: center;">
+        ESP-WEBCFG</h1>
+    <hr style=" width: 680px;height: 2px; border: none;background: #4680d9; margin-bottom: 50px"/>
+
+    <div style="width: 810px;height:500px;float: left">
+
+        <div class="inputGroup">
+            <label class="labelStyle" for="ssid">ssid:</label>
+            <input type="text" id="ssid" name="ssid" class="inputStyle">
+        </div>
+
+        <div class="inputGroup">
+            <label class="labelStyle" for="password"> password:</label>
+            <input type="text" id="password" name="password" class="inputStyle">
+        </div>
+
+
+        <div class="inputGroup" style="height: 80px">
+            <label class="labelStyle" for="cfg_Json">parameter:</label>
+            <textarea id="cfg_Json" rows="3" cols="20" class="inputStyle" style="height: 80px;resize:none;"></textarea>
+            <button class="btn" onclick="jsoncfg()">send</button>
+        </div>
+
+        <div class="inputGroup">
+            <label class="labelStyle" for="otafile">Update:</label>
+            <div class="inputStyle" style="background: none;position:relative; width: 275px ">
+                <input type="file" id="otafile" name="otafile" style="visibility: hidden;width: 0px;height: 0px;"/>
+                <label class="inputStyle"
+                       style=" display: block;line-height:32px;  color: white; width: 275px; background: none; text-overflow:ellipsis;"
+                       id="otafilePath" for="otafile"></label>
+            </div>
+
+            <label class="btn" for="otafile" style="float: left;  margin-left: 24px;">选择文件</label>
+            <button class="btn" id="upload" type="button" style="float: left" onclick="startUpload()">
+                Upload
+            </button>
+        </div>
+        <div class="inputGroup">
+            <div id="progress" style="color: white"></div>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+</body>
+</html>

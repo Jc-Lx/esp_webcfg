@@ -1,0 +1,22 @@
+{
+"C_Cpp.intelliSenseEngine": "Tag Parser",
+"idf.portWin": "COM4",
+"idf.adapterTargetName": "esp32",
+"files.associations": {
+    "esp_webcfg.h": "c",
+    "esp_spi_flash.h": "c",
+    "esp_wifi_default.h": "c",
+    "esp_system.h": "c",
+    "task.h": "c",
+    "esp_wifi.h": "c",
+    "nvs_flash.h": "c",
+    "esp_log.h": "c",
+    "*.inc": "c",
+    "freertos.h": "c",
+    "complex": "c",
+    "esp_netif.h": "c",
+    "sys.h": "c",
+    "esp_ota_ops.h": "c",
+    "*.ipp": "c"
+}
+}
